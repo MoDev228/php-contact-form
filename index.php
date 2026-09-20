@@ -1,12 +1,15 @@
 <?php
 
 $method = $_SERVER['REQUEST_METHOD'];
+$nom = "";
+$email = "";
+$message = "";
+$erreurs = [];
 
 if ($method === 'POST') {
   $nom = trim($_POST['nom'] ?? "");
   $email = trim($_POST['email'] ?? "");
   $message = trim($_POST['message'] ?? "");
-  $erreurs = [];
 
   if ($nom === "") {
     $erreurs[] = "Le nom est obligatoire";
@@ -59,6 +62,9 @@ if ($method === 'POST') {
             <?php endforeach; ?>
           <?php endif; ?>
 
+          <?php if (empty($erreurs) && $method === 'POST'): ?>
+            <?php echo "<p>Formulaire valide !</p>"; ?>
+          <?php endif; ?>
         </ul>
       </article>
     </section>
