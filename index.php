@@ -3,9 +3,24 @@
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'POST') {
-  $nom = $_POST['nom'] ?? "";
-  $email = $_POST['email'] ?? "";
-  $message = $_POST['message'] ?? "";
+  $nom = trim($_POST['nom'] ?? "");
+  $email = trim($_POST['email'] ?? "");
+  $message = trim($_POST['message'] ?? "");
+  $erreurs = [];
+
+  if ($nom === "") {
+    $erreurs[] = "Le nom est obligatoire";
+  }
+
+  if ($email === "") {
+    $erreurs[] = "L’email est obligatoire";
+  } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+    $erreurs[] = "L’email n’est pas valide !";
+  }
+
+  if ($message === "") {
+    $erreurs[] = "Le message est obligatoire";
+  }
 
 }
 ?>
@@ -33,6 +48,18 @@ if ($method === 'POST') {
 
           <input type="submit" class="btn" value="Envoyer">
         </form>
+
+        <ul class="list_erreur">
+
+          <?php if (!empty($erreurs)): ?>
+            <?php foreach($erreurs as $erreur): ?>
+              <li>
+                <?= htmlspecialchars($erreur) ?>
+              </li>
+            <?php endforeach; ?>
+          <?php endif; ?>
+
+        </ul>
       </article>
     </section>
   </main>
