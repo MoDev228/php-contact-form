@@ -1,3 +1,15 @@
+<?php
+
+$method = $_SERVER['REQUEST_METHOD'];
+
+if ($method === 'POST') {
+  $nom = $_POST['nom'] ?? "";
+  $email = $_POST['email'] ?? "";
+  $message = $_POST['message'] ?? "";
+
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
