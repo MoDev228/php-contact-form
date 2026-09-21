@@ -2,6 +2,10 @@
 
 session_start();
 
+if (!isset($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 require_once __DIR__ . '/config/database.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -18,6 +22,16 @@ if ($method === 'POST') {
   $nom = trim($_POST['nom'] ?? "");
   $email = trim($_POST['email'] ?? "");
   $message = trim($_POST['message'] ?? "");
+
+  $csrfToken = $_POST['csrf_token'] ?? '';
+
+  if (
+    !isset($_SESSION['csrf_token']) ||
+    !is_string($csrfToken) ||
+    !hash_equals($_SESSION['csrf_token'], $csrfToken)
+  ) {
+    $erreurs[] = "La requête est invalide.";
+  }
 
   if ($nom === "") {
     $erreurs[] = "Le nom est obligatoire";
@@ -72,6 +86,11 @@ if ($method === 'POST') {
     <section class="section">
       <article class="formulaire">
         <form action="" method="post" class="form">
+          <input
+    type="hidden"
+    name="csrf_token"
+    value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>"
+>
           <label for="nom">Nom :</label>
           <input
             type="text"
