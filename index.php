@@ -35,16 +35,22 @@ if ($method === 'POST') {
 
   if ($nom === "") {
     $erreurs[] = "Le nom est obligatoire";
+  } elseif (mb_strlen($nom) > 100) {
+    $erreurs[] = "Le nom ne doit pas dépasser 100 caractères.";
   }
 
   if ($email === "") {
     $erreurs[] = "L’email est obligatoire";
   } elseif (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
     $erreurs[] = "L’email n’est pas valide !";
+  } elseif (mb_strlen($email) > 255) {
+    $erreurs[] = "L'adresse email ne doit pas dépasser 255 caractères.";
   }
 
   if ($message === "") {
     $erreurs[] = "Le message est obligatoire";
+  } elseif (mb_strlen($message) > 5000) {
+    $erreurs[] = "Le message ne doit pas dépasser 5000 caractères.";
   }
 
   if (empty($erreurs)) {
