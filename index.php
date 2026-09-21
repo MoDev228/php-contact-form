@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once __DIR__ . '/config/database.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -8,6 +10,9 @@ $email = "";
 $message = "";
 $erreurs = [];
 $succes = false;
+
+$succes = $_SESSION['succes'] ?? null;
+unset($_SESSION['succes']);
 
 if ($method === 'POST') {
   $nom = trim($_POST['nom'] ?? "");
@@ -42,7 +47,10 @@ if ($method === 'POST') {
       ':message' => $message
     ]);
 
-    $succes = true;
+    $_SESSION['succes'] = "Message envoyé avec succès !";
+
+    header('Location: index.php');
+    exit;
 
   } catch (PDOException $e) {
     error_log($e->getMessage());
@@ -105,8 +113,8 @@ if ($method === 'POST') {
             <?php endforeach; ?>
           <?php endif; ?>
 
-          <?php if ($succes === true): ?>
-            <p>Message envoyé avec succès !</p>
+          <?php if ($succes !== null): ?>
+            <p><?= htmlspecialchars($succes) ?></p>
           <?php endif; ?>
         </ul>
       </article>
