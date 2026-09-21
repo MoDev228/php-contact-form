@@ -1,10 +1,13 @@
 <?php
 
+require_once __DIR__ . '/config/database.php';
+
 $method = $_SERVER['REQUEST_METHOD'];
 $nom = "";
 $email = "";
 $message = "";
 $erreurs = [];
+$succes = false;
 
 if ($method === 'POST') {
   $nom = trim($_POST['nom'] ?? "");
@@ -25,6 +28,20 @@ if ($method === 'POST') {
     $erreurs[] = "Le message est obligatoire";
   }
 
+  if (empty($erreurs)) {
+    $stmt = $pdo->prepare("
+      INSERT INTO contacts (nom, email, message)
+      VALUES (:nom, :email, :message)
+    ");
+
+    $stmt->execute([
+      ':nom' => $nom,
+      ':email' => $email,
+      ':message' => $message
+    ]);
+
+    $succes = true;
+  }
 }
 ?>
 
@@ -41,29 +58,48 @@ if ($method === 'POST') {
       <article class="formulaire">
         <form action="" method="post" class="form">
           <label for="nom">Nom :</label>
-          <input type="text" name="nom" id="nom" value="<?= htmlspecialchars($nom) ?>" placeholder="Entrer votre nom..." required>
+          <input
+            type="text"
+            name="nom"
+            id="nom"
+            value="<?= htmlspecialchars($nom) ?>"
+            placeholder="Entrer votre nom..."
+            required
+          >
 
           <label for="email">Email :</label>
-          <input type="email" name="email" id="email" value="<?= htmlspecialchars($email) ?>" placeholder="Entrer votre email..." required>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            value="<?= htmlspecialchars($email) ?>"
+            placeholder="Entrer votre email..."
+            required
+          >
 
           <label for="message">Message :</label>
-          <textarea name="message" id="message" rows="5" placeholder="Entrer votre message..." required><?= htmlspecialchars($message) ?></textarea>
+          <textarea
+            name="message"
+            id="message"
+            rows="5"
+            placeholder="Entrer votre message..."
+            required
+          ><?= htmlspecialchars($message) ?></textarea>
 
           <input type="submit" class="btn" value="Envoyer">
         </form>
 
         <ul class="list_erreur">
-
           <?php if (!empty($erreurs)): ?>
-            <?php foreach($erreurs as $erreur): ?>
+            <?php foreach ($erreurs as $erreur): ?>
               <li>
                 <?= htmlspecialchars($erreur) ?>
               </li>
             <?php endforeach; ?>
           <?php endif; ?>
 
-          <?php if (empty($erreurs) && $method === 'POST'): ?>
-            <?php echo "<p>Formulaire valide !</p>"; ?>
+          <?php if ($succes === true): ?>
+            <p>Message envoyé avec succès !</p>
           <?php endif; ?>
         </ul>
       </article>

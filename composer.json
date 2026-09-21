@@ -1,0 +1,12 @@
+{
+    "name": "modev/php-contact-form",
+    "authors": [
+        {
+            "name": "MoDev228",
+            "email": "modev228@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.7"
+    }
+}
