@@ -29,6 +29,8 @@ if ($method === 'POST') {
   }
 
   if (empty($erreurs)) {
+
+  try {
     $stmt = $pdo->prepare("
       INSERT INTO contacts (nom, email, message)
       VALUES (:nom, :email, :message)
@@ -41,7 +43,12 @@ if ($method === 'POST') {
     ]);
 
     $succes = true;
+
+  } catch (PDOException $e) {
+    error_log($e->getMessage());
+    $erreurs[] = "Une erreur est survenue lors de l'envoi du message.";
   }
+}
 }
 ?>
 
