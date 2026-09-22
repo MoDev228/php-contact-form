@@ -37,6 +37,8 @@ if ($method === 'POST') {
     $erreurs[] = "Le nom est obligatoire";
   } elseif (mb_strlen($nom) > 100) {
     $erreurs[] = "Le nom ne doit pas dépasser 100 caractères.";
+  } elseif (!preg_match("/^[\p{L}\p{N}\s'-]+$/u", $nom)) {
+    $erreurs[] = "Le nom contient des caractères non autorisés.";
   }
 
   if ($email === "") {
