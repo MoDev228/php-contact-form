@@ -1,0 +1,404 @@
+# PHP Contact Form
+
+Application de formulaire de contact développée en PHP, avec PostgreSQL comme base de données et déployée sur Render.
+
+## Présentation
+
+Ce projet est un exercice pratique destiné à mettre en œuvre les bases d'une application PHP connectée à une base de données PostgreSQL.
+
+L'application permet à un utilisateur de :
+
+- saisir son nom ;
+- saisir son adresse e-mail ;
+- rédiger un message ;
+- envoyer le formulaire ;
+- enregistrer les données dans PostgreSQL.
+
+Le projet met également en pratique plusieurs notions importantes du développement backend :
+
+- traitement des requêtes HTTP POST ;
+- validation des données côté serveur ;
+- protection CSRF ;
+- échappement des données affichées ;
+- requêtes SQL préparées avec PDO ;
+- gestion des variables d'environnement ;
+- connexion à PostgreSQL ;
+- conteneurisation avec Docker ;
+- déploiement sur Render.
+
+## Démo
+
+Application en production :
+
+https://php-contact-form-bpyn.onrender.com/
+
+Dépôt GitHub :
+
+https://github.com/MoDev228/php-contact-form
+
+## Technologies
+
+| Technologie | Utilisation |
+| --- | --- |
+| PHP 8.3 | Backend et traitement du formulaire |
+| PostgreSQL | Base de données |
+| Supabase | Hébergement de PostgreSQL |
+| PDO | Connexion et requêtes SQL |
+| Composer | Gestion des dépendances PHP |
+| phpdotenv | Chargement des variables d'environnement en local |
+| Docker | Conteneurisation |
+| Apache | Serveur web |
+| Render | Déploiement |
+| HTML5 | Structure du formulaire |
+| CSS3 | Interface |
+
+## Fonctionnalités
+
+### Formulaire
+
+Le formulaire contient trois champs :
+
+- Nom
+- Email
+- Message
+
+### Validation serveur
+
+Les données sont vérifiées côté serveur avant toute insertion en base :
+
+- nom obligatoire ;
+- longueur maximale du nom : 100 caractères ;
+- caractères autorisés dans le nom ;
+- email obligatoire ;
+- validation du format de l'email ;
+- longueur maximale de l'email : 255 caractères ;
+- message obligatoire ;
+- longueur maximale du message : 5000 caractères.
+
+La validation côté navigateur avec l'attribut `required` est utile pour l'expérience utilisateur, mais elle n'est pas considérée comme une protection suffisante. Le serveur effectue donc sa propre validation.
+
+### Protection CSRF
+
+Un jeton CSRF aléatoire est généré et stocké dans la session PHP.
+
+Le formulaire transmet ce jeton avec la requête POST et le serveur vérifie sa correspondance avec `hash_equals()`.
+
+### Requêtes SQL préparées
+
+Les données sont insérées avec une requête préparée PDO :
+
+```php
+$stmt = $pdo->prepare("
+    INSERT INTO contacts (nom, email, message)
+    VALUES (:nom, :email, :message)
+");
+```
+
+Cette approche évite de construire directement une requête SQL à partir des données utilisateur.
+
+### Échappement HTML
+
+Les données réaffichées dans le HTML sont échappées avec `htmlspecialchars()` afin d'éviter qu'une donnée utilisateur soit interprétée comme du HTML.
+
+## Architecture
+
+```text
+php-contact-form/
+├── config/
+│   └── database.php
+├── css/
+│   └── style.css
+├── .dockerignore
+├── .env.example
+├── .gitignore
+├── Dockerfile
+├── composer.json
+├── composer.lock
+├── index.php
+└── php_contacts_db.sql
+```
+
+### Rôle des principaux fichiers
+
+#### `index.php`
+
+Point d'entrée de l'application.
+
+Il :
+
+1. démarre la session ;
+2. génère le jeton CSRF ;
+3. récupère les données POST ;
+4. valide les données ;
+5. exécute l'insertion PostgreSQL ;
+6. redirige l'utilisateur après une insertion réussie ;
+7. affiche les erreurs ou le message de succès.
+
+#### `config/database.php`
+
+Configure la connexion PDO vers PostgreSQL à partir des variables d'environnement.
+
+Le DSN utilisé est basé sur :
+
+```text
+pgsql:host=...;port=...;dbname=...;sslmode=require
+```
+
+#### `css/style.css`
+
+Contient les styles de l'interface du formulaire.
+
+#### `Dockerfile`
+
+Construit l'environnement de production avec :
+
+- PHP 8.3 ;
+- Apache ;
+- PDO ;
+- `pdo_pgsql` ;
+- ZIP ;
+- Composer.
+
+Le conteneur écoute sur le port `10000`.
+
+## Prérequis
+
+Pour travailler localement, il faut disposer de :
+
+- PHP 8.3 ou version compatible ;
+- Composer ;
+- PostgreSQL ;
+- Git.
+
+Docker peut être utilisé à la place d'une installation locale complète de PHP et des extensions nécessaires.
+
+## Installation locale
+
+### 1. Cloner le projet
+
+```bash
+git clone git@github.com:MoDev228/php-contact-form.git
+cd php-contact-form
+```
+
+### 2. Installer les dépendances
+
+```bash
+composer install
+```
+
+### 3. Configurer les variables d'environnement
+
+Copier le fichier d'exemple :
+
+```bash
+cp .env.example .env
+```
+
+Puis renseigner les informations de connexion PostgreSQL :
+
+```env
+DB_HOST=
+DB_PORT=5432
+DB_NAME=postgres
+DB_USER=
+DB_PASSWORD=
+```
+
+Le fichier `.env` contient des informations sensibles et ne doit jamais être versionné.
+
+Il est exclu du dépôt par `.gitignore`.
+
+### 4. Préparer la base de données
+
+La production utilise PostgreSQL avec Supabase.
+
+La table utilisée par l'application est :
+
+```sql
+CREATE TABLE public.contacts (
+    id bigint GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+    nom varchar(100) NOT NULL,
+    email varchar(255) NOT NULL,
+    message text NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+```
+
+La protection Row Level Security (RLS) est activée sur la table en production.
+
+### 5. Vérifier la connexion PostgreSQL
+
+```bash
+php -r 'require __DIR__ . "/config/database.php"; echo "Connexion PostgreSQL réussie !\n";'
+```
+
+## Lancer l'application en local
+
+Avec le serveur PHP intégré :
+
+```bash
+php -S localhost:8000
+```
+
+Puis ouvrir :
+
+http://localhost:8000
+
+## Utilisation avec Docker
+
+Construire l'image :
+
+```bash
+docker build -t php-contact-form .
+```
+
+Lancer le conteneur :
+
+```bash
+docker run --rm -p 10000:10000 --env-file .env php-contact-form
+```
+
+Puis ouvrir :
+
+http://localhost:10000
+
+## Déploiement sur Render
+
+Le projet est déployé comme **Web Service Docker** sur Render.
+
+Configuration principale :
+
+- Repository : `MoDev228/php-contact-form`
+- Branch : `main`
+- Runtime : Docker
+- Dockerfile : `./Dockerfile`
+- Docker Build Context : racine du dépôt
+- Instance : Free
+
+Les variables d'environnement sont configurées directement dans Render.
+
+### Variables nécessaires
+
+```text
+DB_HOST
+DB_PORT
+DB_NAME
+DB_USER
+DB_PASSWORD
+```
+
+Les secrets ne sont pas stockés dans le dépôt GitHub.
+
+## Base de données
+
+### Schéma
+
+La table `public.contacts` contient :
+
+| Colonne | Type | Contraintes |
+| --- | --- | --- |
+| `id` | bigint | Clé primaire, identité |
+| `nom` | varchar(100) | NOT NULL |
+| `email` | varchar(255) | NOT NULL |
+| `message` | text | NOT NULL |
+| `created_at` | timestamptz | DEFAULT now() |
+
+### Flux de données
+
+```text
+Formulaire HTML
+      ↓
+Requête HTTP POST
+      ↓
+Validation PHP
+      ↓
+Vérification CSRF
+      ↓
+PDO + requête préparée
+      ↓
+PostgreSQL / Supabase
+      ↓
+public.contacts
+```
+
+## Sécurité
+
+Le projet applique actuellement plusieurs protections :
+
+### Protection CSRF
+
+Chaque formulaire contient un jeton CSRF associé à la session.
+
+### Validation serveur
+
+Toutes les données utilisateur sont validées avant l'insertion en base.
+
+### Requêtes préparées
+
+PDO utilise des paramètres nommés au lieu de concaténer directement les valeurs utilisateur dans la requête SQL.
+
+### Échappement HTML
+
+Les données affichées dans la page sont traitées avec `htmlspecialchars()`.
+
+### Variables d'environnement
+
+Les identifiants de connexion à PostgreSQL ne sont pas écrits directement dans le code source.
+
+### Gestion des erreurs
+
+Les exceptions PDO sont enregistrées dans les logs avec `error_log()`, tandis qu'un message générique est présenté à l'utilisateur.
+
+## Structure Git
+
+La branche principale du projet est :
+
+```text
+main
+```
+
+Les modifications sont validées par des commits Git puis poussées vers GitHub.
+
+Render est configuré pour déclencher automatiquement un nouveau déploiement lors des changements sur la branche `main`.
+
+## Développement
+
+Pour vérifier l'état du dépôt :
+
+```bash
+git status
+```
+
+Pour vérifier les problèmes de whitespace :
+
+```bash
+git diff --check
+```
+
+Avant de pousser une modification :
+
+```bash
+git add .
+git commit -m "Décrire la modification"
+git push origin main
+```
+
+## Évolutions prévues
+
+Le projet pourra ensuite évoluer avec :
+
+- amélioration de la structure PHP ;
+- séparation plus claire des responsabilités ;
+- tests automatisés ;
+- amélioration de l'interface utilisateur ;
+- gestion plus avancée des erreurs ;
+- limitation anti-spam ;
+- amélioration du modèle de données ;
+- documentation technique plus détaillée.
+
+## Auteur
+
+**Mohamed Boukari**
+
+GitHub : https://github.com/MoDev228
