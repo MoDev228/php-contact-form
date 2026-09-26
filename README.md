@@ -399,6 +399,6 @@ Le projet pourra ensuite évoluer avec :
 
 ## Auteur
 
-**Mohamed Boukari**
+**Mohamed Boukari** (MoDev228)
 
 GitHub : https://github.com/MoDev228
