@@ -12,13 +12,12 @@ if (file_exists($envFile)) {
 }
 
 $host = $_ENV['DB_HOST'] ?? getenv('DB_HOST');
+$port = $_ENV['DB_PORT'] ?? getenv('DB_PORT') ?: 5432;
 $dbname = $_ENV['DB_NAME'] ?? getenv('DB_NAME');
 $username = $_ENV['DB_USER'] ?? getenv('DB_USER');
 $password = $_ENV['DB_PASSWORD'] ?? getenv('DB_PASSWORD');
 
-$charset = "utf8mb4";
-
-$dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
+$dsn = "pgsql:host=$host;port=$port;dbname=$dbname;sslmode=require";
 
 $pdo = new PDO($dsn, $username, $password, [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,

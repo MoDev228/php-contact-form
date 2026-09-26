@@ -8,7 +8,7 @@ RUN apt-get update \
         unzip \
     && docker-php-ext-install \
         pdo \
-        pdo_mysql \
+        pdo_pgsql \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
