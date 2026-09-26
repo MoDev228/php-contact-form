@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #1b1b1b;
+}
+
+body {
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: var(--bg);
+  color: #76797d;
+}
+
+.container {
+  max-width: 900px;
+  min-height: 100vh;
+  margin-inline: auto;
+  padding: 2rem 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section {
+  width: 100%;
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+.formulaire {
+  padding: 2rem;
+  border-radius: 16px;
+  background: hsl(from var(--bg) h s calc(l + 5));
+}
+
+.formulaire h1 {
+  margin-bottom: 1.5rem;
+  color: hsl(from var(--bg) h s calc(l + 75));
+  font-size: 2rem;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  color: hsl(from var(--bg) h s calc(l + 75));
+  font-size: 14px;
+  margin-block: 10px;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: none;
+  background: hsl(from var(--bg) h s calc(l + 15));
+  color: #fff;
+  border-radius: 12px;
+  padding-inline: 1rem;
+  font-family: inherit;
+  transition:
+    outline 0.2s ease,
+    background-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+  outline: 2px solid hsl(from var(--bg) h s calc(l + 20));
+  outline-offset: 2px;
+}
+
+input[type="text"],
+input[type="email"] {
+  width: 100%;
+  height: 3rem;
+  font-size: 1rem;
+}
+
+textarea {
+  min-height: 150px;
+  resize: vertical;
+  line-height: 1.5;
+  padding-block: 1rem;
+}
+
+.btn {
+  margin-top: 1.5rem;
+  min-height: 3rem;
+  border: none;
+  border-radius: 12px;
+  background: hsl(from var(--bg) h s calc(l + 55));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    color 0.3s ease;
+}
+
+.btn:hover {
+  background: hsl(from var(--bg) h s calc(l + 70));
+  color: hsl(from var(--bg) h s calc(l - 10));
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid hsl(from var(--bg) h s calc(l + 75));
+  outline-offset: 3px;
+}
+
+.list_erreur {
+  margin-top: 1rem;
+  list-style: none;
+}
+
+.list_erreur li {
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: hsl(from var(--bg) h calc(s + 25) calc(l + 10));
+  color: hsl(from var(--bg) h calc(s + 25) calc(l + 75));
+  font-size: 0.9rem;
+}
+
+.list_erreur p {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: hsl(from var(--bg) calc(h + 80) s calc(l + 10));
+  color: hsl(from var(--bg) calc(h + 80) s calc(l + 75));
+  font-size: 0.9rem;
+}
+
+
+@media (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .formulaire {
+    padding: 1.5rem;
+  }
+}

@@ -88,11 +88,13 @@ if ($method === 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact - Form</title>
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <main class="container">
     <section class="section">
       <article class="formulaire">
+        <h1>Contactez-nous</h1>
         <form action="" method="post" class="form">
           <input
     type="hidden"
